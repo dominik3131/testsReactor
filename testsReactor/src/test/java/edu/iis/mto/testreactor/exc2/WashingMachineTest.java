@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -80,5 +81,22 @@ public class WashingMachineTest {
         laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
         verify(engineMock, never()).spin();
+    }
+
+    @Test
+    public void shouldUseLongProgramWhenDirtIsMoreThan_AVERAGE_DEGREE_AndAutoDetectIsUsed() {
+        laundryBatch = LaundryBatch.builder()
+                                   .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
+                                   .withType(Material.SYNTETIC)
+                                   .build();
+        programConfiguration = ProgramConfiguration.builder()
+                                                   .withProgram(Program.AUTODETECT)
+                                                   .withSpin(false)
+                                                   .build();
+        when(dirtDetectorMock.detectDirtDegree(laundryBatch)).thenReturn(
+                new Percentage(WashingMachine.AVERAGE_DEGREE.getDoubleValue() + 1));
+        laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
+        assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
+        assertThat(laundryStatus.getRunnedProgram(), is(equalTo(Program.LONG)));
     }
 }

@@ -21,6 +21,10 @@ public class Percentage {
         return Objects.requireNonNull(other, "other == null").value > this.value;
     }
 
+    public double getDoubleValue() {
+        return value;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(value);
