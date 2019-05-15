@@ -3,7 +3,6 @@ package edu.iis.mto.testreactor.exc2;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,6 +11,8 @@ import static org.mockito.Mockito.when;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 public class WashingMachineTest {
 
@@ -19,18 +20,16 @@ public class WashingMachineTest {
     private LaundryStatus laundryStatus;
     private ProgramConfiguration programConfiguration;
     private LaundryBatch laundryBatch;
-
+    @Mock
     private DirtDetector dirtDetectorMock;
-
+    @Mock
     private Engine engineMock;
-
+    @Mock
     private WaterPump waterPumpMock;
 
     @Before
     public void setUp() {
-        dirtDetectorMock = mock(DirtDetector.class);
-        engineMock = mock(Engine.class);
-        waterPumpMock = mock(WaterPump.class);
+        MockitoAnnotations.initMocks(this);
         washingMachine = new WashingMachine(dirtDetectorMock, engineMock, waterPumpMock);
         laundryBatch = LaundryBatch.builder()
                                    .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
