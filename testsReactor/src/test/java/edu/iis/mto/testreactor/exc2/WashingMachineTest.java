@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -98,5 +99,20 @@ public class WashingMachineTest {
         laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
         assertThat(laundryStatus.getRunnedProgram(), is(equalTo(Program.LONG)));
+    }
+
+    @Test
+    public void engineShouldRunForProperAmountOfTime() {
+        laundryBatch = LaundryBatch.builder()
+                                   .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
+                                   .withType(Material.SYNTETIC)
+                                   .build();
+        programConfiguration = ProgramConfiguration.builder()
+                                                   .withProgram(Program.MEDIUM)
+                                                   .withSpin(false)
+                                                   .build();
+        laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
+        assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
+        verify(engineMock, times(1)).runWashing(Program.MEDIUM.getTimeInMinutes());;
     }
 }
