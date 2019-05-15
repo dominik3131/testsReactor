@@ -36,8 +36,7 @@ public class WashingMachineTest {
     }
 
     @Test
-    public void shouldSaidThatLaundryBatchIsTooHeavy() {
-
+    public void shouldSayThatLaundryBatchIsTooHeavy() {
         laundryBatch = LaundryBatch.builder()
                                    .withWeightKg(WashingMachine.MAX_WEIGTH_KG + 1)
                                    .withType(Material.COTTON)
@@ -49,5 +48,20 @@ public class WashingMachineTest {
         laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(equalTo(Result.FAILURE)));
         assertThat(laundryStatus.getErrorCode(), is(equalTo(ErrorCode.TOO_HEAVY)));
+    }
+
+    @Test
+    public void shouldSayThatLaundryIsFinishedAndThatProperProgramWasUsed() {
+        laundryBatch = LaundryBatch.builder()
+                                   .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
+                                   .withType(Material.COTTON)
+                                   .build();
+        programConfiguration = ProgramConfiguration.builder()
+                                                   .withProgram(Program.MEDIUM)
+                                                   .withSpin(true)
+                                                   .build();
+        laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
+        assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
+        assertThat(laundryStatus.getRunnedProgram(), is(equalTo(programConfiguration.getProgram())));
     }
 }
