@@ -32,6 +32,14 @@ public class WashingMachineTest {
         engineMock = mock(Engine.class);
         waterPumpMock = mock(WaterPump.class);
         washingMachine = new WashingMachine(dirtDetectorMock, engineMock, waterPumpMock);
+        laundryBatch = LaundryBatch.builder()
+                                   .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
+                                   .withType(Material.COTTON)
+                                   .build();
+        programConfiguration = ProgramConfiguration.builder()
+                                                   .withProgram(Program.MEDIUM)
+                                                   .withSpin(false)
+                                                   .build();
     }
 
     @Test
@@ -45,10 +53,7 @@ public class WashingMachineTest {
                                    .withWeightKg(WashingMachine.MAX_WEIGTH_KG + 1)
                                    .withType(Material.COTTON)
                                    .build();
-        programConfiguration = ProgramConfiguration.builder()
-                                                   .withProgram(Program.AUTODETECT)
-                                                   .withSpin(true)
-                                                   .build();
+
         laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(equalTo(Result.FAILURE)));
         assertThat(laundryStatus.getErrorCode(), is(equalTo(ErrorCode.TOO_HEAVY)));
@@ -56,14 +61,6 @@ public class WashingMachineTest {
 
     @Test
     public void shouldSayThatLaundryIsFinishedAndThatProperProgramWasUsed() {
-        laundryBatch = LaundryBatch.builder()
-                                   .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
-                                   .withType(Material.COTTON)
-                                   .build();
-        programConfiguration = ProgramConfiguration.builder()
-                                                   .withProgram(Program.MEDIUM)
-                                                   .withSpin(true)
-                                                   .build();
         laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
         assertThat(laundryStatus.getRunnedProgram(), is(equalTo(programConfiguration.getProgram())));
@@ -86,10 +83,6 @@ public class WashingMachineTest {
 
     @Test
     public void shouldUseLongProgramWhenDirtIsMoreThan_AVERAGE_DEGREE_AndAutoDetectIsUsed() {
-        laundryBatch = LaundryBatch.builder()
-                                   .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
-                                   .withType(Material.SYNTETIC)
-                                   .build();
         programConfiguration = ProgramConfiguration.builder()
                                                    .withProgram(Program.AUTODETECT)
                                                    .withSpin(false)
@@ -103,14 +96,6 @@ public class WashingMachineTest {
 
     @Test
     public void engineShouldRunForProperAmountOfTime() {
-        laundryBatch = LaundryBatch.builder()
-                                   .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
-                                   .withType(Material.SYNTETIC)
-                                   .build();
-        programConfiguration = ProgramConfiguration.builder()
-                                                   .withProgram(Program.MEDIUM)
-                                                   .withSpin(false)
-                                                   .build();
         laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
         verify(engineMock, times(1)).runWashing(Program.MEDIUM.getTimeInMinutes());
@@ -118,14 +103,6 @@ public class WashingMachineTest {
 
     @Test
     public void waterPumpPourAndReleaseMethodsShouldBeCalledOnce() {
-        laundryBatch = LaundryBatch.builder()
-                                   .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
-                                   .withType(Material.SYNTETIC)
-                                   .build();
-        programConfiguration = ProgramConfiguration.builder()
-                                                   .withProgram(Program.MEDIUM)
-                                                   .withSpin(false)
-                                                   .build();
         laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
         verify(waterPumpMock, times(1)).pour(laundryBatch.getWeightKg());
