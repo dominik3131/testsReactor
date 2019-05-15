@@ -113,6 +113,22 @@ public class WashingMachineTest {
                                                    .build();
         laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
-        verify(engineMock, times(1)).runWashing(Program.MEDIUM.getTimeInMinutes());;
+        verify(engineMock, times(1)).runWashing(Program.MEDIUM.getTimeInMinutes());
+    }
+
+    @Test
+    public void waterPumpPourAndReleaseMethodsShouldBeCalledOnce() {
+        laundryBatch = LaundryBatch.builder()
+                                   .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
+                                   .withType(Material.SYNTETIC)
+                                   .build();
+        programConfiguration = ProgramConfiguration.builder()
+                                                   .withProgram(Program.MEDIUM)
+                                                   .withSpin(false)
+                                                   .build();
+        laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
+        assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
+        verify(waterPumpMock, times(1)).pour(laundryBatch.getWeightKg());
+        verify(waterPumpMock, times(1)).release();
     }
 }
