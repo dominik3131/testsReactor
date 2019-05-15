@@ -4,6 +4,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -63,5 +65,20 @@ public class WashingMachineTest {
         laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
         assertThat(laundryStatus.getRunnedProgram(), is(equalTo(programConfiguration.getProgram())));
+    }
+
+    @Test
+    public void shouldSayThatEngineSpinIsNotUsedWithDelicateMaterialAndSpinOptionSetToTrue() {
+        laundryBatch = LaundryBatch.builder()
+                                   .withWeightKg(WashingMachine.MAX_WEIGTH_KG)
+                                   .withType(Material.DELICATE)
+                                   .build();
+        programConfiguration = ProgramConfiguration.builder()
+                                                   .withProgram(Program.MEDIUM)
+                                                   .withSpin(true)
+                                                   .build();
+        laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
+        assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
+        verify(engineMock, never()).spin();
     }
 }
