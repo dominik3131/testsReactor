@@ -95,6 +95,19 @@ public class WashingMachineTest {
     }
 
     @Test
+    public void shouldUseMediumProgramWhenDirtIsLowerThan_AVERAGE_DEGREE_AndAutoDetectIsUsed() {
+        programConfiguration = ProgramConfiguration.builder()
+                                                   .withProgram(Program.AUTODETECT)
+                                                   .withSpin(false)
+                                                   .build();
+        when(dirtDetectorMock.detectDirtDegree(laundryBatch)).thenReturn(
+                new Percentage(WashingMachine.AVERAGE_DEGREE.getDoubleValue() - 1));
+        laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
+        assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
+        assertThat(laundryStatus.getRunnedProgram(), is(equalTo(Program.MEDIUM)));
+    }
+
+    @Test
     public void engineShouldRunForProperAmountOfTime() {
         laundryStatus = washingMachine.start(laundryBatch, programConfiguration);
         assertThat(laundryStatus.getResult(), is(equalTo(Result.SUCCESS)));
