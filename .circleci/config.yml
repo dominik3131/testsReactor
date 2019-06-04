@@ -1,31 +1,31 @@
-version: 2
-jobs:
-  build:
+version: 2 # use CircleCI 2.0
+jobs: # a collection of steps
+  build: # runs not using Workflows must have a `build` job as entry point
     
-    working_directory: ~/circleci-demo-java-spring
+    working_directory: ~/testsReactor # directory where steps will run
 
-    docker:
-      - image: circleci/openjdk:8-jdk-browsers
-      - image: circleci/postgres:9.6.3-alpine
-        environment:
-          POSTGRES_USER: root
-          POSTGRES_DB: circle_test
+    docker: # run the steps with Docker
+      - image: circleci/openjdk:8-jdk-browsers # ...with this image as the primary container; this is where all `steps` will run
 
-    steps:
-
-      - checkout
-
-      - restore_cache:
-          key: circleci-demo-java-spring-{{ checksum "pom.xml" }}
+    steps: # a collection of executable commands
       
-      - run: mvn dependency:go-offline
+      - checkout # check out source code to working directory
+
+      - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
+          # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+          key: testsReactor-{{ checksum "pom.xml" }}
       
-      - save_cache:
+      - run: mvn dependency:go-offline # gets the project dependencies
+      
+      - save_cache: # saves the project dependencies
           paths:
             - ~/.m2
-          key: circleci-demo-java-spring-{{ checksum "pom.xml" }}
+          key: testsReactor-{{ checksum "pom.xml" }}
       
-      - run: mvn package
+      - run: mvn package # run the actual tests
       
+      - store_test_results:
+          path: target/surefire-reports
+          
       - store_artifacts:
-          path: target/demo-java-spring-0.0.1-SNAPSHOT.jar
+          path: target/testsReactor-0.0.1-SNAPSHOT.jar
