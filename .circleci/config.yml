@@ -15,8 +15,6 @@ jobs: # a collection of steps
           # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
           key: testsReactor-{{ checksum "pom.xml" }}
       
-      - run: mvn dependency:go-offline # gets the project dependencies
-      
       - save_cache: # saves the project dependencies
           paths:
             - ~/.m2
